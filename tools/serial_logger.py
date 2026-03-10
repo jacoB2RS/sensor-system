@@ -6,6 +6,8 @@ BAUD = 921600
 START1 = 0xAA
 START2 = 0x55
 
+IMU_SAMPLE_SIZE = 20
+
 ser = serial.Serial(PORT, BAUD, timeout=1)
 
 print("Listening...")
@@ -26,5 +28,21 @@ while True:
             msg_type = header[0]
             count = header[1]
 
-            print(f"Packet start detected | type={msg_type} count={count}")
+            payload_len = count * IMU_SAMPLE_SIZE
+            payload = ser.read(payload_len)
+            crc = ser.read(2)
+
+            if len(payload) != payload_len or len(crc) != 2:
+                print("incomplete packet")
+                continue
+            
+            print(
+                f"Packet OK so far "
+                f"type={msg_type} count={count} "
+                f"payload_bytes={len(payload)} crc_bytes={len(crc)}"
+            )
+
+            
+
+    
 
