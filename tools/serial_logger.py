@@ -63,7 +63,7 @@ while True:
 
             if count > 0:
                 first_sample = payload[:IMU_SAMPLE_SIZE]
-                seq, time_us, ax, ay, az, gx, gy, gz = decode_imu_sample
+                seq, time_us, ax, ay, az, gx, gy, gz = decode_imu_sample(first_sample)
 
                 print(
                     f"First sample | seq={seq} t={time_us} "
