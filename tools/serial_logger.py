@@ -1,4 +1,5 @@
 import serial
+import struct
 
 PORT = "COM3"
 BAUD = 921600
@@ -19,6 +20,9 @@ def crc16_ccitt(data):
             else:
                 crc = (crc << 1) & 0xFFFF
     return crc
+
+def decode_imu_sample(sample_byte):
+    return struct.unpack("<IIhhhhhh", sample_byte)
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
 
@@ -57,10 +61,15 @@ while True:
                 print("CRC FAIL - packet dropped")
                 continue
 
-            print(
-                f"Packet OK | type={msg_type} "
-                f"samples={count} payload={len(payload)}"
-            )
+            if count > 0:
+                first_sample = payload[:IMU_SAMPLE_SIZE]
+                seq, time_us, ax, ay, az, gx, gy, gz = decode_imu_sample
+
+                print(
+                    f"First sample | seq={seq} t={time_us} "
+                    f"ax={ax} ay={ay} az={az} "
+                    f"gx={gx} gy={gy} gz={gz}"
+                )
 
 
             
