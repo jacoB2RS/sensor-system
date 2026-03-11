@@ -61,12 +61,16 @@ while True:
                 print("CRC FAIL - packet dropped")
                 continue
 
-            if count > 0:
-                first_sample = payload[:IMU_SAMPLE_SIZE]
-                seq, time_us, ax, ay, az, gx, gy, gz = decode_imu_sample(first_sample)
+            for i in range(count):
+                start = i * IMU_SAMPLE_SIZE
+                end = start + IMU_SAMPLE_SIZE
+
+                sample_bytes = payload[start:end]
+
+                seq, time_us, ax, ay, az, gx, gy, gz = decode_imu_sample(sample_bytes)
 
                 print(
-                    f"First sample | seq={seq} t={time_us} "
+                    f"seq={seq} t={time_us} "
                     f"ax={ax} ay={ay} az={az} "
                     f"gx={gx} gy={gy} gz={gz}"
                 )
