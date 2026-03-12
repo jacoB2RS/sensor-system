@@ -2,6 +2,7 @@
 #include <ICM_20948.h>
 #include <string.h>
 
+#define NODE_ID 1
 #define SDA_PIN 21
 #define SCL_PIN 22
 #define IMU_ADDR 0x69
@@ -9,12 +10,15 @@
 ICM_20948_I2C imu;
 
 // ===== Struct =====
+#pragma pack(push, 1)
 struct ImuSample {
+  uint8_t  node_id;
   uint32_t seq;
   uint32_t time_us;
   int16_t ax, ay, az;
   int16_t gx, gy, gz;
 };
+#pragma pack(pop)
 
 // ===== Buffer =====
 #define BUFFER_SIZE 200
@@ -114,6 +118,7 @@ void loop() {
     if (count < BUFFER_SIZE) {
       ImuSample &s = buffer[writeIndex];
 
+      s.node_id = NODE_ID;
       s.seq = seq++;
       s.time_us = (uint32_t)micros();
       s.ax = imu.accX();
