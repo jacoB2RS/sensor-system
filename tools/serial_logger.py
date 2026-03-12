@@ -7,7 +7,7 @@ BAUD = 921600
 START1 = 0xAA
 START2 = 0x55
 
-IMU_SAMPLE_SIZE = 20
+IMU_SAMPLE_SIZE = 21
 TYPE_IMU = 0x01
 
 OUTPUT_FILE = "imu_log.bin"
@@ -26,7 +26,7 @@ def crc16_ccitt(data):
 
 
 def decode_imu_sample(sample_bytes):
-    return struct.unpack("<IIhhhhhh", sample_bytes)
+    return struct.unpack("<BIIhhhhhh", sample_bytes)
 
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
@@ -76,11 +76,11 @@ with open(OUTPUT_FILE, "wb") as f:
                 # valgfritt: vis bare første sample i pakken
                 if count > 0:
                     first_sample = payload[:IMU_SAMPLE_SIZE]
-                    seq, time_us, ax, ay, az, gx, gy, gz = decode_imu_sample(first_sample)
+                    node_id, seq, time_us, ax, ay, az, gx, gy, gz = decode_imu_sample(first_sample)
 
                     print(
                         f"Logged {count} samples | "
-                        f"seq={seq} ax={ax} ay={ay} az={az}"
+                        f"node={node_id} seq={seq} ax={ax} ay={ay} az={az}"
                     )
 
             
