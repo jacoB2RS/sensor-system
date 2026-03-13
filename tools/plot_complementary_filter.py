@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 
 FILE_NAME = "imu_log.bin"
-IMU_SAMPLE_SIZE = 21
+IMU_SAMPLE_SIZE = 23
 
 times = []
 roll_accs = []
@@ -23,7 +23,7 @@ with open(FILE_NAME, "rb") as f:
         if len(data) != IMU_SAMPLE_SIZE:
             break
 
-        node_id, seq, time_us, ax, ay, az, gx, gy, gz = struct.unpack("<BIIhhhhhh", data)
+        node_id, seq, time_us, ax, ay, az, gx, gy, gz, flags = struct.unpack("<BIIhhhhhhH", data) # "<BIIhhhhhhH" = 23 bytes
 
         t = time_us / 1_000_000
 
