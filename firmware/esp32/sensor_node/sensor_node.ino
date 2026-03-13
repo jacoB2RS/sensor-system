@@ -11,7 +11,7 @@ ICM_20948_I2C imu;
 
 // ===== Struct =====
 #pragma pack(push, 1)
-struct ImuSample {
+struct ImuSampleV2 {
   uint8_t  node_id;
   uint32_t seq;
   uint32_t time_us;
@@ -23,7 +23,7 @@ struct ImuSample {
 
 // ===== Buffer =====
 #define BUFFER_SIZE 200
-ImuSample buffer[BUFFER_SIZE];
+ImuSampleV2 buffer[BUFFER_SIZE];
 
 // ===== counters =====
 volatile int writeIndex = 0;
@@ -59,21 +59,21 @@ void sendImuPacketCRC() {
   // Header: AA 55 type count
   uint8_t hdr[4] = {0xAA, 0x55, 0x01, PACKET_SAMPLES};
 
-  const size_t payloadBytes = PACKET_SAMPLES * sizeof(ImuSample);
+  const size_t payloadBytes = PACKET_SAMPLES * sizeof(ImuSampleV2);
   const size_t crcBufLen = 2 + payloadBytes; // type + count + payload
 
   // Buffer for CRC calculation: [type][count][payload...]
-  static uint8_t crcBuf[2 + PACKET_SAMPLES * sizeof(ImuSample)];
+  static uint8_t crcBuf[2 + PACKET_SAMPLES * sizeof(ImuSampleV2)];
   crcBuf[0] = hdr[2];
   crcBuf[1] = hdr[3];
 
   // Copy N samples from ringbuffer into crcBuf payload - oppfylling av crcBuf frem til vi treffer 5 samples(PACKET_SAMPLES)
   for (uint8_t i = 0; i < PACKET_SAMPLES; i++) {
-    ImuSample s = buffer[readIndex];
+    ImuSampleV2 s = buffer[readIndex];
     readIndex = (readIndex + 1) % BUFFER_SIZE;
     count--;
   
-    memcpy(&crcBuf[2 + i * sizeof(ImuSample)], &s, sizeof(ImuSample));   
+    memcpy(&crcBuf[2 + i * sizeof(ImuSampleV2)], &s, sizeof(ImuSampleV2));   
   }
 
   uint16_t crc = crc16_ccitt(crcBuf, crcBufLen);
@@ -117,7 +117,7 @@ void loop() {
     imu.getAGMT();
 
     if (count < BUFFER_SIZE) {
-      ImuSample &s = buffer[writeIndex];
+      ImuSampleV2 &s = buffer[writeIndex];
 
       s.node_id = NODE_ID;
       s.seq = seq++;
