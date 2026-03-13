@@ -17,6 +17,7 @@ struct ImuSample {
   uint32_t time_us;
   int16_t ax, ay, az;
   int16_t gx, gy, gz;
+  uint16_t flags;
 };
 #pragma pack(pop)
 
@@ -127,6 +128,7 @@ void loop() {
       s.gx = imu.gyrX();
       s.gy = imu.gyrY();
       s.gz = imu.gyrZ();
+      s.flags = 0;
 
       writeIndex = (writeIndex + 1) % BUFFER_SIZE;
       count++;
