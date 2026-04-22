@@ -4,13 +4,6 @@ Wearable IMU sensor system built with ESP32 + ICM-20948 for motion analysis.
 
 Goal: build a multi-node IMU system that streams motion data in real time and can be used for technique analysis in sports (initial focus: cross-country skiing).
 
-The system is designed to support:
-- deterministic sampling
-- multiple sensor nodes
-- real-time streaming
-- offline analysis
-- machine learning for technique segmentation and error detection
-
 ---
 
 # System Overview
